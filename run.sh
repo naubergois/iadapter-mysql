@@ -150,44 +150,26 @@ echo "=> Initializing DB"
 mysql -u root -e "CREATE TABLE workspace.agent( name varchar(45) DEFAULT NULL,running varchar(45) DEFAULT NULL,ip varchar(145) DEFAULT NULL,id int(11) NOT NULL AUTO_INCREMENT,date varchar(45) DEFAULT NULL,PRIMARY KEY (id) ) ENGINE=InnoDB AUTO_INCREMENT=4414 DEFAULT CHARSET=latin1;"
 mysql -u root -e "CREATE TABLE workspace.log(log varchar(200) DEFAULT NULL,id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id)) ENGINE=InnoDB AUTO_INCREMENT=886 DEFAULT CHARSET=latin1;"
 mysql -u root -e "CREATE TABLE workspace.samples(LABEL varchar(100) DEFAULT NULL,RESPONSETIME varchar(45) DEFAULT NULL,MESSAGE varchar(300) DEFAULT NULL,INDIVIDUAL varchar(345) DEFAULT NULL,GENERATION varchar(45) DEFAULT NULL,TESTPLAN varchar(45) DEFAULT NULL ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
-mysql -u root -e "CREATE TABLE workspace.workload ( NAME varchar(330) DEFAULT NULL,RESPONSETIME varchar(30) DEFAULT NULL,TYPE varchar(30) DEFAULT NULL,USERS varchar(30) DEFAULT NULL,ERROR varchar(30) DEFAULT NULL,FIT varchar(400) DEFAULT NULL,FUNCTION1 varchar(30) DEFAULT NULL,FUNCTION2 varchar(30) DEFAULT NULL,FUNCTION3 varchar(30) DEFAULT NULL,FUNCTION4 varchar(30) DEFAULT NULL,FUNCTION5 varchar(30) DEFAULT NULL,FUNCTION6 varchar(30) DEFAULT NULL,FUNCTION7 varchar(30) DEFAULT NULL,FUNCTION8 varchar(30) DEFAULT NULL,FUNCTION9 varchar(30) DEFAULT NULL,FUNCTION10 varchar(30) DEFAULT NULL,TESTPLAN varchar(40) DEFAULT NULL,GENERATION varchar(45) DEFAULT NULL,ACTIVE varchar(45) DEFAULT NULL,id int(11) NOT NULL AUTO_INCREMENT,PERCENT90 varchar(45) DEFAULT NULL,PERCENT80 varchar(45) DEFAULT NULL,PERCENT70 varchar(45) DEFAULT NULL,TOTALERROR varchar(45) DEFAULT NULL,SEARCHMETHOD varchar(45) DEFAULT NULL,USER1 varchar(45) DEFAULT NULL,USER2 varchar(45) DEFAULT NULL,USER3 varchar(45) DEFAULT NULL,USER4 varchar(45) DEFAULT NULL,USER5 varchar(45) DEFAULT NULL,USER6 varchar(45) DEFAULT NULL,USER7 varchar(45) DEFAULT NULL,USER8 varchar(45) DEFAULT NULL,USER9 varchar(45) DEFAULT NULL,USER10 varchar(45) DEFAULT NULL,MEMORY varchar(45) DEFAULT NULL,CPUSHARE varchar(45) DEFAULT NULL, PRIMARY KEY (id) ) ENGINE=InnoDB AUTO_INCREMENT=33730 DEFAULT CHARSET=latin1;"
+mysql -u root -e "CREATE TABLE workspace.workload (NAME varchar(330) DEFAULT NULL,  RESPONSETIME varchar(30) DEFAULT NULL,  TYPE varchar(300) DEFAULT NULL,  USERS varchar(30) DEFAULT NULL,  ERROR varchar(30) DEFAULT NULL,   FIT varchar(400) DEFAULT NULL,  FUNCTION1 varchar(30) DEFAULT NULL,  FUNCTION2 varchar(30) DEFAULT NULL,  FUNCTION3 varchar(30) DEFAULT NULL,  FUNCTION4 varchar(30) DEFAULT NULL,  FUNCTION5 varchar(30) DEFAULT NULL,  FUNCTION6 varchar(30) DEFAULT NULL,  FUNCTION7 varchar(30) DEFAULT NULL,  FUNCTION8 varchar(30) DEFAULT NULL,  FUNCTION9 varchar(30) DEFAULT NULL,  FUNCTION10 varchar(30) DEFAULT NULL,  TESTPLAN varchar(40) DEFAULT NULL,  GENERATION varchar(45) DEFAULT NULL,  ACTIVE varchar(45) DEFAULT NULL,  id int(11) NOT NULL AUTO_INCREMENT,  PERCENT90 varchar(45) DEFAULT NULL,  PERCENT80 varchar(45) DEFAULT NULL,  PERCENT70 varchar(45) DEFAULT NULL,  TOTALERROR varchar(45) DEFAULT NULL,  SEARCHMETHOD varchar(345) DEFAULT NULL,  USER1 varchar(45) DEFAULT NULL,  USER2 varchar(45) DEFAULT NULL,  USER3 varchar(45) DEFAULT NULL,  USER4 varchar(45) DEFAULT NULL,  USER5 varchar(45) DEFAULT NULL,  USER6 varchar(45) DEFAULT NULL,  USER7 varchar(45) DEFAULT NULL,  USER8 varchar(45) DEFAULT NULL,  USER9 varchar(45) DEFAULT NULL,  USER10 varchar(45) DEFAULT NULL,  MEMORY varchar(45) DEFAULT NULL,  CPUSHARE varchar(45) DEFAULT NULL,  PRIMARY KEY (id)) ENGINE=InnoDB AUTO_INCREMENT=44270 DEFAULT CHARSET=latin1; "
+
+
+
+
+
+
+mysql -u root -e  "CREATE TABLE workspace.Q(responsetime varchar(245) DEFAULT NULL,  testplan varchar(245) DEFAULT NULL,  Qvalue float DEFAULT NULL,  id int(11) NOT NULL AUTO_INCREMENT,  state varchar(300) DEFAULT NULL,  PRIMARY KEY (id)) ENGINE=InnoDB AUTO_INCREMENT=34075 DEFAULT CHARSET=latin1;"
+
+
+
+
+
+mysql -u root -e " CREATE TABLE workspace.Operation (NAME varchar(245) DEFAULT NULL,  testplan varchar(245) DEFAULT NULL,  FUNC integer DEFAULT NULL, NEWFUNC integer DEFAULT NULL, IDOLDWORKLOAD integer DEFAULT NULL,  id int(11) NOT NULL AUTO_INCREMENT,  state varchar(300) DEFAULT NULL,  PRIMARY KEY (id)) ENGINE=InnoDB AUTO_INCREMENT=34075 DEFAULT CHARSET=latin1; "
+
+
 
 #ImportSql
 #touch /sql_imported
 
 
-# Set MySQL REPLICATION - MASTER
-if [ -n "${REPLICATION_MASTER}" ]; then
-    echo "=> Configuring MySQL replication as master (2/2) ..."
-    if [ ! -f /replication_set.2 ]; then
-        echo "=> Creating a log user ${REPLICATION_USER}:${REPLICATION_PASS}"
-        mysql -uroot -e "CREATE USER '${REPLICATION_USER}'@'%' IDENTIFIED BY '${REPLICATION_PASS}'"
-        mysql -uroot -e "GRANT REPLICATION SLAVE ON *.* TO '${REPLICATION_USER}'@'%'"
-        mysql -uroot -e "reset master"
-        echo "=> Done!"
-        touch /replication_set.2
-    else
-        echo "=> MySQL replication master already configured, skip"
-    fi
-fi
-
-# Set MySQL REPLICATION - SLAVE
-if [ -n "${REPLICATION_SLAVE}" ]; then
-    echo "=> Configuring MySQL replication as slave (2/2) ..."
-    if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ] && [ -n "${MYSQL_PORT_3306_TCP_PORT}" ]; then
-        if [ ! -f /replication_set.2 ]; then
-            echo "=> Setting master connection info on slave"
-            mysql -uroot -e "CHANGE MASTER TO MASTER_HOST='${MYSQL_PORT_3306_TCP_ADDR}',MASTER_USER='${MYSQL_ENV_REPLICATION_USER}',MASTER_PASSWORD='${MYSQL_ENV_REPLICATION_PASS}',MASTER_PORT=${MYSQL_PORT_3306_TCP_PORT}, MASTER_CONNECT_RETRY=30"
-            mysql -uroot -e "start slave"
-            echo "=> Done!"
-            touch /replication_set.2
-        else
-            echo "=> MySQL replication slave already configured, skip"
-        fi
-    else
-        echo "=> Cannot configure slave, please link it to another MySQL container with alias as 'mysql'"
-        exit 1
-    fi
-fi
 
 fg
